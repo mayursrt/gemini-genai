@@ -7,6 +7,8 @@ import google.generativeai as genai
 from chromadb import Documents, EmbeddingFunction, Embeddings
 from typing import List
 import PyPDF2
+from bs4 import BeautifulSoup
+import requests
 
 app = Flask(__name__)
 
@@ -45,8 +47,8 @@ def clean_document(content: str) -> str:
     return cleaned_content
 
 def load_data(tenant_id: str, persist_directory: str):
-    raw_documents_directory = f"data/{tenant_id}/raw"
-    clean_documents_directory = f"data/{tenant_id}/clean"
+    raw_documents_directory = f"data/{tenant_id}/docs/raw"
+    clean_documents_directory = f"data/{tenant_id}/docs/clean"
     os.makedirs(clean_documents_directory, exist_ok=True)
 
     documents = []
@@ -125,17 +127,18 @@ def get_gemini_response(query: str, context: List[str]) -> str:
     response = model.generate_content(build_prompt(query, context))
     return response.text
 
+
 @app.route('/load_data', methods=['POST'])
 def api_load_data():
     tenant_id = request.json.get('tenantid')
-    persist_directory = request.json.get('persist_directory')
+    persist_directory = request.json.get('persist_directory','db')
     load_data(tenant_id, persist_directory)
     return jsonify({"message": "Data loaded successfully"}), 200
 
 @app.route('/get_answer', methods=['POST'])
 def api_get_answer():
     tenant_id = request.json.get('tenantid')
-    persist_directory = request.json.get('persist_directory')
+    persist_directory = request.json.get('persist_directory','db')
     query = request.json.get('query')
     
     client = chromadb.PersistentClient(path=persist_directory)
@@ -156,6 +159,8 @@ def api_get_answer():
     )
 
     return jsonify({"response": response, "sources": sources}), 200
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,3 @@
+Press 1 to check your credit card balance.
+Press 2 to make a credit card payment.
+Press 3 for talking to customer care executive for other credit card related information:
