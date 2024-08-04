@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Service Admin Panel</title>
+  <style>
+    /* Reset styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Global styles */
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      color: #333;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header styles */
+    header {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 20px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      margin-right: 20px;
+    }
+
+    nav ul {
+      display: flex;
+      list-style-type: none;
+      align-items: center;
+    }
+
+    nav ul li {
+      margin-right: 20px;
+    }
+
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    /* Main content styles */
+    main {
+      margin-top: 40px;
+    }
+
+    section {
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .overview-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-gap: 20px;
+    }
+
+    .card {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .quick-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .quick-actions button {
+      margin-left: 10px;
+    }
+
+    .tenants-table-container {
+      max-height: 300px; /* Set the maximum height of the table */
+      overflow-y: auto; /* Enable vertical scrolling */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background-color: #f5f5f5;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    /* Footer styles */
+    footer {
+      text-align: center;
+      color: #888;
+      padding: 20px 0;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+
+      nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav ul li {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+
+      .logo {
+        margin-bottom: 10px;
+      }
+
+      .overview-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-actions {
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .quick-actions button {
+        margin-left: 0;
+        margin-top: 10px;
+      }
+
+      .tenants-table-container {
+        max-height: 200px; /* Reduce the maximum height of the table on small screens */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <nav>
+        <ul>
+          <li class="logo">ASKAI</li>
+          <li><a href="#">Tenants</a></li>
+          <li><a href="#">Users</a></li>
+          <li><a href="#">Documents</a></li>
+          <li><a href="#">Settings</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="dashboard">
+        <h2>Dashboard</h2>
+        <div class="overview-cards">
+          <div class="card">
+            <h3>Total Tenants</h3>
+            <p>100</p>
+          </div>
+          <div class="card">
+            <h3>Total Users</h3>
+            <p>100</p>
+          </div>
+          <div class="card">
+            <h3>Total Documents</h3>
+            <p>2,500</p>
+          </div>
+        </div>
+        <div class="quick-actions">
+          <button>New Tenant</button>
+          <button>New User</button>
+          <button>New Document</button>
+        </div>
+      </section>
+
+      <section class="tenants">
+        <h2>Tenants</h2>
+        <div class="tenants-table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tenant 1</td>
+                <td>tenant1@example.com</td>
+                <td>Active</td>
+                <td>
+                  <button>Edit</button>
+                  <button>Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Tenant 2</td>
+                <td>tenant2@example.com</td>
+                <td>Active</td>
+                <td>
+                  <button>Edit</button>
+                  <button>Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Tenant 3</td>
+                <td>tenant3@example.com</td>
+                <td>Active</td>
+                <td>
+                  <button>Edit</button>
+                  <button>Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Tenant 4</td>
+                <td>tenant4@example.com</td>
+                <td>Active</td>
+                <td>
+                  <button>Edit</button>
+                  <button>Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Tenant 5</td>
+                <td>tenant5@example.com</td>
+                <td>Active</td>
+                <td>
+                  <button>Edit</button>
+                  <button>Delete</button>
+                </td>
+              </tr>
+              <!-- Add more tenant rows as needed -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Add sections for Users, Documents, and Settings as needed -->
+    </main>
+
+    <footer>
+      <p>&copy; 2024 AskAI Service Admin Panel</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

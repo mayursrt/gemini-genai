@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        /* Modern styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #dff7d5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ddf3de;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #c2e2b9;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            color: #4CAF50;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0;
+        }
+        .header h2 {
+            color: #4CAF50;
+            margin-top: 5px;
+            font-size: 1.5em;
+        }
+        nav {
+            background-color: #abe59b;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        nav a {
+            text-decoration: none;
+        }
+        .welcome-message {
+            margin: 0;
+            display: inline;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .home-btn,
+        .logout-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .home-btn:hover,
+        .logout-btn:hover {
+            background-color: #45a049;
+        }
+        /* Profile styles */
+        .profile-header {
+            text-align: center;
+            padding: 20px;
+            background-color: #39853d;
+            color: #fff;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .profile-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .profile-pic-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-pic {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .edit-profile-pic {
+            color: #079c1b;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            margin-top: 10px;
+        }
+        .profile-info {
+            text-align: left;
+            margin-bottom: 20px;
+            flex: 0 0 100%;
+            max-width: 100%;
+            padding: 0 20px;
+        }
+        .profile-info label {
+            font-weight: bold;
+            color: #333;
+        }
+        .profile-info span {
+            color: #666;
+        }
+        .bio {
+            color: #666;
+            margin-top: 10px;
+        }
+        .edit-profile {
+            text-align: center;
+            padding: 20px;
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        .edit-profile a {
+            background-color: #2e962e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+        .edit-profile a:hover {
+            background-color: #0056b3;
+        }
+
+        /* Popup styling */
+        .popup {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .popup-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 70%;
+            max-width: 500px; /* Adjusted max-width */
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .edit-profile h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.5em;
+        }
+        .edit-profile-form {
+            margin-top: 20px;
+        }
+        .edit-profile-form input[type="text"],
+        .edit-profile-form textarea {
+            width: calc(100% - 20px); /* Adjusted width */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .edit-profile-form textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .edit-profile-form button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .edit-profile-form button:hover {
+            background-color: #45a049;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 600px) {
+            .profile-pic {
+                width: 150px;
+                height: 150px;
+            }
+            .popup-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ASK-AI</h1>
+        <h2>User Panel</h2>
+    </div>
+    <nav>
+        <a href="{{ home_url }}">
+            <button class="home-btn">Home</button>
+        </a>
+        <p class="welcome-message">Welcome, <span>{{ username }}</span></p>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </nav>
+    <div class="container">
+        <div class="profile-header">User Profile</div>
+        <div class="profile-content">
+            <div class="profile-pic-container">
+                <div class="profile-pic">
+                    <!-- Placeholder image or dynamically loaded profile picture -->
+                    <img src="../static/images/placeholder-profile-pic.png" alt="Profile Picture">
+                </div>
+                <a href="#" class="edit-profile-pic" onclick="document.getElementById('uploadProfilePic').click()">Edit Profile Pic</a>
+                <input type="file" id="uploadProfilePic" style="display: none;">
+            </div>
+            <div class="profile-info">
+                <label for="userid">UserId:</label>
+                <span id="userid">{{user.user_id}}</span>
+            </div>
+            <div class="profile-info">
+                <label for="username">Username:</label>
+                <span id="username">{{user.user_name}}</span>
+            </div>
+            <div class="profile-info">
+                <label for="email">Email:</label>
+                <span id="email">{{user.email}}</span>
+            </div>
+            <div class="profile-info">
+                <label for="role">Role:</label>
+                <span id="role">{{user.role}}</span>
+            </div>
+            <div class="profile-info">
+                <label for="tenantId">TenantId:</label>
+                <span id="tenantId">{{user.tenant_id}}</span>
+            </div>
+            
+        </div>
+        <div class="edit-profile">
+            <a href="#" class="edit-link" onclick="openPopup()">Edit Profile</a>
+        </div>
+    </div>
+
+    <!-- Popup for editing profile -->
+    <div id="editProfilePopup" class="popup" onclick="closePopup(event)">
+        <div class="popup-content" onclick="event.stopPropagation()">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="editProfileForm" class="edit-profile-form" onsubmit="saveProfile(); return false;">
+                <div class="profile-info">
+                    <label for="username">Username:</label>
+                    <input type="text" id="editUsername" value={{user.user_name}}>
+                </div>
+                <div class="profile-info">
+                    <button>Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+
+        function logout() {
+            window.location.href = '/logout';
+        }
+
+        function openPopup() {
+            document.getElementById('editProfilePopup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('editProfilePopup').style.display = 'none';
+        }
+
+        function saveProfile() {
+            var newUsername = document.getElementById('editUsername').value;
+            var newFullname = document.getElementById('editFullname').value;
+            var newBio = document.getElementById('editBio').value;
+
+            // Perform actions to save the profile details (e.g., sending AJAX request)
+            // Update the UI with the new profile details (optional)
+
+            // Close the popup after saving
+            closePopup();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Files</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0 0 100px;
+            background-color: #f0f0f0;
+        }
+        .card {
+            box-shadow: 0 4px 8px rgba(10, 83, 25, 0.2);
+            transition: box-shadow 0.3s;
+            border-radius: 15px;
+            margin-bottom: 2em;
+            background-color: #B0E2B7;
+        }
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(7, 63, 21, 0.2);
+        }
+        .card-body {
+            padding: 2em;
+            border-radius: 15px;
+        }
+        .card-title {
+            font-size: 1.75em;
+            font-weight: bold;
+            text-align: center;
+            color: #13611D;
+            text-transform: uppercase;
+        }
+        .card-text {
+            font-size: 1.25em;
+            text-align: center;
+            color: #2D6D36;
+        }
+        .highlight {
+            color: #248596;
+        }
+        .btn-custom {
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-custom:hover {
+            background-color: #007bb5;
+        }
+        .btn-cancel {
+            background-color: #f44336;
+            display: none;
+        }
+        .btn-cancel:hover {
+            background-color: #d32f2f;
+        }
+        .modal-header, .modal-footer {
+            border: none;
+        }
+        .modal-content {
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .modal-title {
+            font-size: 1.5em;
+        }
+        nav {
+            background-color: #f8f8f8;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav button{
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+        nav p {
+            margin: 0;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            outline: 0;
+        }
+        .modal.show {
+            display: block;
+        }
+        .modal-dialog {
+            margin: 30px auto;
+            max-width: 500px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
+</head>
+<body>
+    <div style="text-align: center; padding: 20px; background-color: #c2e2b9;">
+        <h1 style="font-size: 2.5em; color: #4CAF50; font-weight: bold; text-transform: uppercase;">ASK-AI</h1>
+        <h2>Tenant Panel</h2>
+    </div>
+    <nav>
+        <a href="{{ home_url }}">
+            <button>Home</button>
+        </a>
+        <p>Welcome, <span style="color: #4CAF50;"><a href="{{ user_profile_url }}">{{ username }}</a></span></p>
+        <button onclick="logout()">Logout</button>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ tenant.tenant_name }}</h5>
+                        <p class="card-text"><span class="highlight">Tenant ID:</span> {{ tenant.tenant_id }}</p>
+                        <p class="card-text"><span class="highlight">Created at:</span> {{ tenant.created_at }}</p>
+                        <p class="card-text"><span class="highlight">Updated at:</span> {{ tenant.updated_at }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+    <div class="container">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Upload Documents</h5>
+                <input type="file" id="fileUpload" multiple style="margin-top: 10px;" onchange="toggleCancelButton()">
+                <button class="btn-custom" onclick="uploadFiles()">Upload Files</button>
+                <button class="btn-custom btn-cancel" id="cancelButton" onclick="cancelUpload()">Cancel</button>
+                <div id="uploadStatus" style="text-align: center; margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Load URL or Website</h5>
+                <button class="btn-custom" onclick="openUrlPopup()">Load URL</button>
+                <button class="btn-custom" onclick="openWebsitePopup()">Load Whole Website</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="urlPopup" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Load URL</h5>
+                    <button type="button" class="close" onclick="closeUrlPopup()">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="urlInput" placeholder="Enter URL" class="form-control">
+                </div>
+                <div id="urlStatus" style="text-align: center; margin-top: 10px;"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-custom" onclick="loadUrl()">Load URL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="websitePopup" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Load Whole Website</h5>
+                    <button type="button" class="close" onclick="closeWebsitePopup()">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="websiteInput" placeholder="Enter URL" class="form-control">
+                </div>
+                <div id="websiteStatus" style="text-align: center; margin-top: 10px;"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-custom" onclick="loadWebsite()">Load Website</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #d1f1cd; padding: 10px; display: flex; justify-content: center; align-items: center;">
+        <div style="margin-right: 20px;">
+            <p>&copy; 2024 AskAI. All rights reserved.</p>
+        </div>
+        <div>
+            <p><a href="/about_us" style="color: rgb(201, 80, 146);">Meet Us @</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        </div>
+        <div>
+            <p>
+                <a href="https://www.facebook.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.twitter.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-instagram"></i></a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function logout() {
+            window.location.href = '/logout';
+        }
+
+        function toggleCancelButton() {
+            var fileInput = document.getElementById('fileUpload');
+            var cancelButton = document.getElementById('cancelButton');
+            if (fileInput.files.length > 0) {
+                cancelButton.style.display = 'inline-block';
+            } else {
+                cancelButton.style.display = 'none';
+            }
+        }
+
+        function cancelUpload() {
+            var fileInput = document.getElementById('fileUpload');
+            fileInput.value = '';
+            toggleCancelButton();
+        }
+
+        function uploadFiles() {
+            var fileInput = document.getElementById('fileUpload');
+            var files = fileInput.files;
+            var formData = new FormData();
+            var tenantId = '{{ tenant.tenant_id }}';
+
+            // Display loading message
+            displayUploadMessage('Uploading files...', 'blue');
+
+            // Allowed file types
+            var allowedTypes = ['text/plain', 'application/pdf', 'application/msword', 
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var documentId = uuid.v4();
+
+                // Check file type
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Only text, PDF, and MS Word files are allowed.');
+                    //call function to cancel upload
+                    cancelUpload();
+                    return;
+                }
+
+                // Append file with document_id to formData
+                formData.append('files[]', file, documentId + '_' + file.name);
+            }
+
+            // First API call to localhost:5000/add_document
+            fetch(`/add_document/${tenantId}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayUploadMessage('File upload successful', 'green');
+                console.log('File upload successful:', data);
+
+                // Prepare data for the second API call to localhost:8000/load_document
+                var dataList = [];
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    dataList.push({
+                        name: file.name,
+                        type: file.type,
+                        size: file.size
+                    });
+                }
+
+                // Second API call to localhost:8000/load_document
+                return fetch('http://localhost:8000/load_document', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        document_id: documentId,
+                        data_list: dataList,
+                        tenant_id: tenantId
+                    })
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayUploadMessage('Load URL upload successful', 'green');
+                console.log('File upload successful:', data);
+                location.reload();
+            })
+            .catch(error => {
+                displayUploadMessage('Error uploading files', 'red');
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+        }
+
+        function openUrlPopup() {
+            var urlPopup = document.getElementById('urlPopup');
+            urlPopup.classList.add('show');
+        }
+
+        function closeUrlPopup() {
+            var urlPopup = document.getElementById('urlPopup');
+            urlPopup.classList.remove('show');
+        }
+
+        function openWebsitePopup() {
+            var websitePopup = document.getElementById('websitePopup');
+            websitePopup.classList.add('show');
+        }
+
+        function closeWebsitePopup() {
+            var websitePopup = document.getElementById('websitePopup');
+            websitePopup.classList.remove('show');
+        }
+
+        function loadUrl() {
+            var urlInput = document.getElementById('urlInput').value;
+            var documentId = uuid.v4();
+            var tenantId = '{{ tenant.tenant_id }}';
+
+            // Display loading message
+            displayUrlMessage('Loading URL...', 'blue');
+
+            fetch('http://localhost:8000/load_url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    document_id: documentId,
+                    url: urlInput,
+                    tenant_id: tenantId
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayUrlMessage('URL load successful', 'green');
+                console.log('URL load successful:', data);
+                closeUrlPopup();
+            })
+            .catch(error => {
+                displayUrlMessage('Error loading URL', 'red');
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+        }
+
+        function loadWebsite() {
+            var websiteInput = document.getElementById('websiteInput').value;
+            var tenantId = '{{ tenant.tenant_id }}';
+
+            // Display loading message
+            displayWebsiteMessage('Loading Website...', 'blue');
+
+            fetch('http://localhost:8000/load_website', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: websiteInput,
+                    tenant_id: tenantId
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayWebsiteMessage('Website load successful', 'green');
+                console.log('Website load successful:', data);
+                closeWebsitePopup();
+            })
+            .catch(error => {
+                displayWebsiteMessage('Error loading Website', 'red');
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+        }
+
+        function displayUploadMessage(message, color) {
+            var statusMessage = document.getElementById('uploadStatus');
+            statusMessage.textContent = message;
+            statusMessage.style.color = color;
+            // Clear message after 2 seconds
+            setTimeout(function() {
+                statusMessage.textContent = '';
+            }, 2000);
+        }
+
+        function displayUrlMessage(message, color) {
+            var statusMessage = document.getElementById('urlStatus');
+            statusMessage.textContent = message;
+            statusMessage.style.color = color;
+            // Clear message after 2 seconds
+            setTimeout(function() {
+                statusMessage.textContent = '';
+            }, 2000);
+        }
+
+        function displayWebsiteMessage(message, color) {
+            var statusMessage = document.getElementById('websiteStatus');
+            statusMessage.textContent = message;
+            statusMessage.style.color = color;
+            // Clear message after 2 seconds
+            setTimeout(function() {
+                statusMessage.textContent = '';
+            }, 2000);
+        }
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+

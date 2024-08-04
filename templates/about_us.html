@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f0f0f0;
+            }
+        .card {
+            border: none;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: transform 0.3s;  /* Animation */
+        }
+        
+        .card:hover {
+            transform: scale(1.1);  /* Scale the size of the card up */
+        }
+        
+        .card-img-top {
+            width: 150px; /* Set the width */
+            height: 150px; /* Set the height */
+            object-fit: cover; /* Resize the images to fill the container while maintaining aspect ratio */
+            margin: 0 auto;
+        }
+        
+        .card-title {
+            font-weight: bold;
+        }
+        
+        .card-text {
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; padding: 20px; background-color: #c2e2b9;">
+        <h1 style="font-size: 2.5em; color: #4CAF50; font-weight: bold; text-transform: uppercase;">ASK-AI</h1>
+        <h2>Admin Panel</h2>
+    </div>
+    <nav style="background-color: #f8f8f8; padding: 10px; display: flex; justify-content: space-between;">
+        
+        <a href="/">
+                <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Home</button>
+        </a>
+        <p style="margin: 0; display: inline;">Welcome, <span style="color: #4CAF50;">{{username}}</span></p>
+        
+        <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer;">Logout</button>
+    </nav>
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Team member 1 -->
+            <div class="col-sm-4">
+                <div class="card">
+                    <img class="card-img-top rounded-circle" src="/static/images/lion_king.png" alt="Vaibhav Tawhare">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Vaibhav Tawhare</h5>
+                        <p class="card-text">Sr. Software Engineer</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team member 2 -->
+            <div class="col-sm-4">
+                <div class="card">
+                    <img class="card-img-top rounded-circle" src="/static/images/Pikachu.png" alt="Mayur Machhi">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Mayur Machhi</h5>
+                        <p class="card-text">Lead Software Engineer</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team member 3 -->
+            <div class="col-sm-4">
+                <div class="card">
+                    <img class="card-img-top rounded-circle" src="/static/images/anies.png" alt="Osho Upadhyay">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Osho Upadhyay</h5>
+                        <p class="card-text">Software Developer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; font-size: 3em; font-weight: bold; padding-top: 70px; color: rgb(116, 12, 12);">
+        We are HIRING!!!!!!
+    </div>
+
+    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #d1f1cd; padding: 10px; display: flex; justify-content: center; align-items: center;">
+        <div style="margin-right: 20px;">
+            <p>&copy; 2024 AskAI. All rights reserved.</p>
+        </div>
+        <div>
+            <p><a href="/about_us" style="color: rgb(201, 80, 146);">Meet Us @</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        </div>
+        <div>
+            <p>
+                <a href="https://www.facebook.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.twitter.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-instagram"></i></a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

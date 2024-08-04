@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        h2 {
+            color: #28a745; /* Light green */
+            margin-bottom: 30px;
+        }
+
+        .user-card {
+            background-color: #f0f9eb; /* Light green shade */
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .user-card:hover {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-card h4 {
+            color: #007bff; /* Blue */
+        }
+
+        .user-card p {
+            margin-bottom: 10px;
+        }
+
+        .user-card .user-id {
+            color: #28a745; /* Light green */
+        }
+
+        .user-card .created-at {
+            font-size: 0.9em;
+            color: #6c757d; /* Gray */
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; padding: 20px; background-color: #c2e2b9;">
+        <h1 style="font-size: 2.5em; color: #4CAF50; font-weight: bold; text-transform: uppercase;">ASK-AI</h1>
+        <h2>Admin Panel</h2>
+    </div>
+    <nav style="background-color: #f8f8f8; padding: 10px; display: flex; justify-content: space-between;">
+        
+        <a href="/">
+                <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Home</button>
+        </a>
+        <p style="margin: 0; display: inline;">Welcome, <span style="color: #4CAF50;">{{ username }}</span></p>
+        
+        <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer;" onclick="logout()">Logout</button>
+    </nav>
+    <div class="container">
+        <h2>User Data</h2>
+        <!-- Table View -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Tenant ID</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.user_id }}</td>
+                        <td>{{ user.user_name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>{{ user.tenant_id }}</td>
+                        <td>{{ user.created_at }}</td>
+                        <td>{{ user.updated_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Card View with Delete Form -->
+        <div class="row">
+            {% for user in users %}
+            <div class="col-md-4">
+                <div class="user-card">
+                    <h4>{{ user.user_name }}</h4>
+                    <p class="user-id">User ID: {{ user.user_id }}</p>
+                    <p>Email: {{ user.email }}</p>
+                    <p>Role: {{ user.role }}</p>
+                    <p>Tenant ID: {{ user.tenant_id }}</p>
+                    <p class="created-at">Created At: {{ user.created_at }}</p>
+                    <p class="created-at">Updated At: {{ user.updated_at }}</p>
+                    <!-- Delete Button -->
+                    <button onclick="deleteUser('{{ user.user_id }}')" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+<script>
+    function logout() {
+        window.location.href = '/logout';
+    }
+
+    function deleteUser(userId) {
+        if (confirm('Are you sure you want to delete this user?')) {
+            fetch(`/delete_user/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message); // Show success message
+                location.reload();
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                // Handle errors
+            });
+        }
+    }
+</script>
+</html>

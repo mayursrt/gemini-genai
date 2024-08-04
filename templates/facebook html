@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #1877f2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .radio-group label {
+            margin-right: 10px;
+        }
+
+        .create-page-link {
+            margin-top: 20px;
+        }
+
+        .login-section {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #1877f2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="facebook-logo.png" alt="Facebook Logo" style="width: 100px; margin-bottom: 20px;">
+        <h2>Connect with friends and the world around you on Facebook.</h2>
+        <p>See photos and updates from friends in News Feed</p>
+        <p>Share what's new in your life on your timeline</p>
+        <p>Find more of what you're looking for with graph search</p>
+
+        <h3>Sign Up</h3>
+        <p>It's free and always will be</p>
+
+        <form>
+            <input type="text" placeholder="First name">
+            <input type="text" placeholder="Last name">
+            <input type="text" placeholder="Email or mobile number">
+            <input type="text" placeholder="Re-enter email or mobile number">
+            <input type="password" placeholder="New password">
+            <label for="birthday">Birthday</label>
+            <select id="day">
+                <option value="">Day</option>
+                <!-- Add day options here -->
+            </select>
+            <select id="month">
+                <option value="">Month</option>
+                <!-- Add month options here -->
+            </select>
+            <select id="year">
+                <option value="">Year</option>
+                <!-- Add year options here -->
+            </select>
+            <div class="radio-group">
+                <label><input type="radio" name="gender" value="female"> Female</label>
+                <label><input type="radio" name="gender" value="male"> Male</label>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+
+        <p class="create-page-link">Create a Page for a celebrity, band, or business</p>
+
+        <div class="login-section">
+            <input type="text" placeholder="Email or Phone">
+            <input type="password" placeholder="Password">
+            <a href="#">Forgot your password?</a>
+            <button>Log In</button>
+        </div>
+    </div>
+</body>
+
+</html>

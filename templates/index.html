@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tenant Management</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <style>
+            #tenantForm {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 20px;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            #tenantForm label {
+                margin-right: 10px;
+            }
+
+            #tenantForm input {
+                margin-right: 10px;
+                padding: 5px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+            }
+
+            #addTenant {
+                padding: 5px 10px;
+                border: none;
+                background-color: #4CAF50;
+                color: white;
+                cursor: pointer;
+            }
+
+            #addTenant:hover {
+                background-color: #45a049;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0 0 100px;
+                background-color: #f0f0f0;
+            }
+            #tenantForm {
+                margin: 20px;
+                background-color: #e1eedd;
+            }
+            #tenantTable {
+                margin: 20px;
+                border-collapse: collapse;
+                width: 98%;
+            }
+            #tenantTable th, #tenantTable td {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+            #tenantTable tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+            #tenantTable th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #4CAF50;
+                color: white;
+                text-align: center;
+            }
+            #tenantTable td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+            }
+            .delete-button {
+                color: white;
+                background-color: rgb(224, 71, 71);
+                border: none;
+                padding: 5px 10px;
+                cursor: pointer;
+            }
+            .edit-button {
+                color: white;
+                background-color: rgb(64, 64, 219);
+                border: none;
+                padding: 5px 10px;
+                cursor: pointer;
+            }
+            #tenantList tr {
+                cursor: pointer;
+            }
+            #tenantList tr:hover {
+                background-color: #daeccc;
+            }
+        </style>
+    </head>
+<body>
+    <div style="text-align: center; padding: 20px; background-color: #c2e2b9;">
+        <h1 style="font-size: 2.5em; color: #4CAF50; font-weight: bold; text-transform: uppercase;">ASK-AI</h1>
+        <h2>Admin Panel</h2>
+    </div>
+    <nav style="background-color: #f8f8f8; padding: 10px; display: flex; justify-content: space-between;">
+        
+        <a href="/">
+                <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Home</button>
+        </a>
+        <p style="margin: 0; display: inline;">Welcome, <span style="color: #4CAF50;"><a href="{{ user_profile_url }}">{{ username }}</a></span></p>
+        
+        <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer;" onclick="logout()">Logout</button>
+    </nav>
+    <form id="tenantForm">
+        <label for="tenant_name">Add a New Tenant:</label>
+        <input type="text" id="tenant_name" name="tenant_name" placeholder="Tenant Name">
+        <button type="button" id="addTenant">Add</button>
+    </form>
+    <div style="display: flex; justify-content: center; margin: 20px;">
+        <a href="/users">
+            <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer;">See All Users</button>
+        </a>
+    </div>
+    <table id="tenantTable">
+        <thead>
+            <tr>
+                <th>Tenant ID</th>
+                <th>Tenant Name</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tenantList"></tbody>
+    </table>
+
+    <div id="editModal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div style="background-color: #e5f3cc; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; border-radius: 5px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); text-align: center;">
+            <h2>Edit Tenant</h2>
+            <label for="editTenantName">Tenant Name:</label>
+            <input type="text" id="editTenantName" name="editTenantName" style="margin-right: 10px; padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
+            <button id="saveEdit" style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 5px;">Save</button>
+            <button id="cancelEdit" style="background-color: #f44336; color: white; border: none; padding: 5px 10px; cursor: pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #d1f1cd; padding: 10px; display: flex; justify-content: center; align-items: center;">
+        <div style="margin-right: 20px;">
+            <p>&copy; 2024 AskAI. All rights reserved.</p>
+        </div>
+        <div>
+            <p><a href="/about_us" style="color: rgb(201, 80, 146);">Meet Us @</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        </div>
+        <div>
+            <p>
+                <a href="https://www.facebook.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.twitter.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-instagram"></i></a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function logout() {
+            window.location.href = '/logout';
+        }
+
+        document.getElementById('addTenant').addEventListener('click', function() {
+            var tenantName = document.getElementById('tenant_name').value;
+            var formData = new FormData();
+            formData.append('tenant_name', tenantName);
+
+            fetch('/add_tenant', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                fetchTenants();
+            });
+            document.getElementById('tenant_name').value = '';
+        });
+
+        function fetchTenants() {
+            fetch('/get_all_tenants')
+            .then(response => response.json())
+            .then(data => {
+                var tenantList = document.getElementById('tenantList');
+                tenantList.innerHTML = '';
+                data.forEach(function(tenant) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = '<td>' + tenant.tenant_id + '</td><td>' + tenant.tenant_name + '</td><td>' + tenant.created_at + '</td><td>' + tenant.updated_at + '</td><td><button class="edit-button" data-tenant-id="' + tenant.tenant_id + '">Edit</button> <button class="delete-button" data-tenant-id="' + tenant.tenant_id + '">Delete</button></td>';
+                    row.addEventListener('click', function() {
+                        window.location.href = '/tenant_data/' + tenant.tenant_id;
+                    });
+                    row.querySelector('.edit-button').addEventListener('click', function(event) {
+                        event.stopPropagation(); // Prevent the row click event from triggering
+                        document.getElementById('editTenantName').value = tenant.tenant_name;
+                        document.getElementById('saveEdit').setAttribute('data-tenant-id', tenant.tenant_id);
+                        document.getElementById('editModal').style.display = 'block';
+                    });
+                    row.querySelector('.delete-button').addEventListener('click', function(event) {
+                        event.stopPropagation(); // Prevent the row click event from triggering
+                        var tenantId = this.getAttribute('data-tenant-id');
+                        fetch('/delete_tenant/' + tenantId, {
+                            method: 'DELETE'
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            fetchTenants();
+                        });
+                    });
+                    tenantList.appendChild(row);
+                });
+            });
+        }
+
+        document.getElementById('saveEdit').addEventListener('click', function() {
+            var tenantName = document.getElementById('editTenantName').value;
+            var tenantId = this.getAttribute('data-tenant-id');
+            var formData = new FormData();
+            formData.append('new_tenant_name', tenantName);
+
+            fetch('/edit_tenant/' + tenantId, {
+                method: 'PUT',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                fetchTenants();
+                document.getElementById('editModal').style.display = 'none';
+            });
+        });
+
+
+        document.getElementById('cancelEdit').addEventListener('click', function() {
+            document.getElementById('editModal').style.display = 'none';
+        });
+
+        document.getElementById('editModal').addEventListener('click', function(event) {
+            if (event.target == document.getElementById('editModal')) {
+                document.getElementById('editModal').style.display = 'none';
+            }
+        });
+
+        fetchTenants();
+    </script>
+
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Include Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    
+</body>
+</html>
