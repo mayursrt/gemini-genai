@@ -534,6 +534,11 @@ def get_all_users():
     return render_template('user_data.html', users=user_list, username=session['username'])
 
 
+@app.route('/chat', methods=['GET'])
+def chat():
+    return render_template('chat.html', username=session.get('username'))
+
+
 @app.route('/get_user/<user_id>', methods=['GET'])
 def get_user(user_id):
     if not is_logged_in():
