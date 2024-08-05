@@ -1,0 +1,20 @@
+**Auto-Processing Approach to Current Supplier Files**
+
+**Problem Statement:**
+
+The current mechanism for picking up supplier files is database-based, meaning only suppliers set up in the system are processed by the bot. This can lead to new suppliers being missed for processing when they are added. Additionally, new source entities being added to current suppliers and new acquisitions require a mechanism in the bot to auto-set up suppliers and discover their files.
+
+**Solution:**
+
+1. **Scenario Handling:**
+
+   a. When files are discovered via email bot, the following scenarios will be handled:
+      - Contract number is in the database and processing proceeds as defined in current modules.
+      - Contract number not in database but supplier folder is set up due to other files/source entities. In this case, the bot creates the source entity folder if not present and saves the file.
+      - Contract number and supplier not set up in RPA configuration. The bot runs an AI function to map the existing folder to the supplier name. If the folder is located, the bot creates the source entity folder and saves the file.
+
+2. **Recursive File Discovery:**
+
+   - Instead of looping through database entries, the bot recursively searches supplier folders to locate files ready for processing. This ensures that files not set up in the system are not missed.
+   - This also facilitates processing of files under new source entities that are not yet set up in the system. The bot creates database set-up entries as new files are discovered.
+   - If files are in an incorrect folder, the bot will move them to the correct location.
