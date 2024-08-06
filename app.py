@@ -198,10 +198,9 @@ def load_data(tenant_id: str, persist_directory: str):
 def build_prompt(query: str, context: List[str]) -> str:
     base_prompt = {
         "content": "I am going to ask you a question, which I would like you to answer"
-        " based only on the provided context, and not any other information."
-        " If there is not enough information in the context to answer the question,"
-        ' say "I am not sure", then try to make a guess.'
-        " Break your answer up into nicely readable paragraphs.",
+        " based on the provided {context}, "
+        " Do not hallucinate,"
+        " give answers on behalf of {tenant_name}, Break your answer up into nicely readable paragraphs.",
     }
     user_prompt = {
         "content": f" The question is '{query}'. Here is all the context you have:"
