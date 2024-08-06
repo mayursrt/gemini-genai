@@ -164,6 +164,7 @@
                 <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Upload Documents</button>
             </a>
             <button style="background-color: #da411b; color: white; border: none; padding: 5px 10px; cursor: pointer;" onclick="publishAllDocuments()">Publish All Documents</button>
+            <button style="background-color: #2e1bda; color: white; border: none; padding: 5px 10px; cursor: pointer;" onclick="chat()">Chat</button>
         </div>        
         <div class="row justify-content-center"></div>
         <div class="row justify-content-center"></div>
@@ -253,6 +254,12 @@
                 uploadButton.style.display = 'inline-block'; // Show the upload button
             }
         }
+
+        //create a function chat also pass tenantId in it and this function should redirect to chat page
+        function chat() {
+            window.location.href = '/tenant-chat/{{ tenant.tenant_id }}';
+        }
+        
 
         function uploadFiles() {
             var fileInput = document.getElementById('fileUpload');

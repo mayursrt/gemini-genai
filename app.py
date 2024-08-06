@@ -538,6 +538,9 @@ def get_all_users():
 def chat():
     return render_template('chat.html', username=session.get('username'))
 
+@app.route('/tenant-chat/<tenant_id>', methods=['GET'])
+def tenantChat(tenant_id):
+    return render_template('chatDummyWebsite.html', username=session.get('username'), tenant_id=tenant_id)
 
 @app.route('/get_user/<user_id>', methods=['GET'])
 def get_user(user_id):
