@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
             padding: 0 0 100px;
             background-color: #f0f0f0;
         }
+
         .card {
             box-shadow: 0 4px 8px rgba(10, 83, 25, 0.2);
             transition: box-shadow 0.3s;
@@ -20,13 +22,16 @@
             margin-bottom: 2em;
             background-color: #B0E2B7;
         }
+
         .card:hover {
             box-shadow: 0 8px 16px rgba(7, 63, 21, 0.2);
         }
+
         .card-body {
             padding: 2em;
             border-radius: 15px;
         }
+
         .card-title {
             font-size: 1.75em;
             font-weight: bold;
@@ -34,14 +39,17 @@
             color: #13611D;
             text-transform: uppercase;
         }
+
         .card-text {
             font-size: 1.25em;
             text-align: center;
             color: #2D6D36;
         }
+
         .highlight {
             color: #248596;
         }
+
         .btn-custom {
             background-color: #008CBA;
             color: white;
@@ -52,26 +60,58 @@
             margin-top: 10px;
             transition: background-color 0.3s ease;
         }
+
         .btn-custom:hover {
             background-color: #007bb5;
         }
+
         .btn-cancel {
             background-color: #f44336;
             display: none;
         }
+
         .btn-cancel:hover {
             background-color: #d32f2f;
         }
-        .modal-header, .modal-footer {
+
+        .modal-header,
+        .modal-footer {
             border: none;
         }
+
         .modal-content {
             border-radius: 15px;
             padding: 20px;
         }
+
         .modal-title {
             font-size: 1.5em;
         }
+
+        .url-format-info {
+            color: #6c757d;
+            /* Gray color for the info text */
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .url-format-info i {
+            margin-right: 8px;
+            /* Spacing between the icon and text */
+            color: #6c757d;
+            /* Gray color for the icon */
+        }
+
+        .url-format-info code {
+            background-color: #f8f9fa;
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+
         nav {
             background-color: #f8f8f8;
             padding: 10px;
@@ -79,7 +119,8 @@
             justify-content: space-between;
             align-items: center;
         }
-        nav button{
+
+        nav button {
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -88,9 +129,11 @@
             margin-right: 10px;
             transition: background-color 0.3s ease;
         }
+
         nav p {
             margin: 0;
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -102,9 +145,11 @@
             overflow: hidden;
             outline: 0;
         }
+
         .modal.show {
             display: block;
         }
+
         .modal-dialog {
             margin: 30px auto;
             max-width: 500px;
@@ -112,6 +157,7 @@
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
 </head>
+
 <body>
     <div style="text-align: center; padding: 20px; background-color: #c2e2b9;">
         <h1 style="font-size: 2.5em; color: #4CAF50; font-weight: bold; text-transform: uppercase;">ChatMinds</h1>
@@ -137,7 +183,7 @@
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
     <div class="container">
         <div class="card">
             <div class="card-body text-center">
@@ -170,14 +216,19 @@
                 </div>
                 <div class="modal-body">
                     <input type="text" id="urlInput" placeholder="Enter URL" class="form-control">
+                    <div class="url-format-info mt-3">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Please ensure that the URL is in <code>https://yoururl.com</code> format</span>
+                    </div>
+                    <div id="urlStatus" class="mt-3" style="text-align: center;"></div>
                 </div>
-                <div id="urlStatus" style="text-align: center; margin-top: 10px;"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn-custom" onclick="loadUrl()">Load URL</button>
                 </div>
             </div>
         </div>
     </div>
+
 
     <div id="websitePopup" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
@@ -190,29 +241,34 @@
                 </div>
                 <div class="modal-body">
                     <input type="text" id="websiteInput" placeholder="Enter URL" class="form-control">
+                    <div class="url-format-info mt-3">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Please ensure that the URL is in <code>https://yoururl.com</code> format</span>
+                    </div>
+                    <div id="websiteStatus" class="mt-3" style="text-align: center;"></div>
                 </div>
-                <div id="websiteStatus" style="text-align: center; margin-top: 10px;"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn-custom" onclick="loadWebsite()">Load Website</button>
                 </div>
             </div>
         </div>
     </div>
-    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #d1f1cd; padding: 10px; display: flex; justify-content: center; align-items: center;">
+
+    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #d1f1cd; padding: 10px; display: flex; justify-content: center; align-items: center; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);">
         <div style="margin-right: 20px;">
-            <p>&copy; 2024 ChatMinds. All rights reserved.</p>
+            <p style="margin: 0; font-weight: bold;">&copy; 2024 ChatMinds. All rights reserved.</p>
+        </div>
+        <div style="margin-right: 20px;">
+            <p style="margin: 0; font-weight: bold;"><a href="/about_us" style="color: rgb(201, 80, 146); text-decoration: none;">Meet Us</a></p>
         </div>
         <div>
-            <p><a href="/about_us" style="color: rgb(201, 80, 146);">Meet Us @</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-        </div>
-        <div>
-            <p>
-                <a href="https://www.facebook.com/ChatMinds" target="_blank" style="color: green;"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.twitter.com/ChatMinds" target="_blank" style="color: green;"><i class="fab fa-twitter"></i></a>
-                <a href="https://www.instagram.com/ChatMinds" target="_blank" style="color: green;"><i class="fab fa-instagram"></i></a>
+            <p style="margin: 0; font-weight: bold;">
+                <a href="https://www.facebook.com/ChatMinds" target="_blank" style="color: green; margin: 0 20px; font-size: 1.5em;"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.twitter.com/ChatMinds" target="_blank" style="color: green; margin: 0 20px; font-size: 1.5em;"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/ChatMinds" target="_blank" style="color: green; margin: 0 20px; font-size: 1.5em;"><i class="fab fa-instagram"></i></a>
             </p>
         </div>
-    </footer>
+    </footer>    
 
     <script>
         function logout() {
@@ -245,8 +301,8 @@
             displayUploadMessage('Uploading files...', 'blue');
 
             // Allowed file types
-            var allowedTypes = ['text/plain', 'application/pdf', 'application/msword', 
-                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            var allowedTypes = ['text/plain', 'application/pdf', 'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
@@ -264,61 +320,31 @@
                 formData.append('files[]', file, documentId + '_' + file.name);
             }
 
-            // First API call to localhost:5000/add_document
+            // API call to upload files locally
             fetch(`/add_document/${tenantId}`, {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                displayUploadMessage('File upload successful', 'green');
-                console.log('File upload successful:', data);
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayUploadMessage('File upload successful', 'green');
+                    console.log('File upload successful:', data);
 
-                // Prepare data for the second API call to localhost:8000/load_document
-                var dataList = [];
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    dataList.push({
-                        name: file.name,
-                        type: file.type,
-                        size: file.size
-                    });
-                }
-
-                // Second API call to localhost:8000/load_document
-                return fetch('http://localhost:8000/load_document', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        document_id: documentId,
-                        data_list: dataList,
-                        tenant_id: tenantId
-                    })
+                    // Clear the file input
+                    fileInput.value = '';
+                    toggleCancelButton();
+                })
+                .catch(error => {
+                    displayUploadMessage('Error uploading files', 'red');
+                    console.error('There has been a problem with your fetch operation:', error);
                 });
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                displayUploadMessage('Load URL upload successful', 'green');
-                console.log('File upload successful:', data);
-                location.reload();
-            })
-            .catch(error => {
-                displayUploadMessage('Error uploading files', 'red');
-                console.error('There has been a problem with your fetch operation:', error);
-            });
         }
+
 
         function openUrlPopup() {
             var urlPopup = document.getElementById('urlPopup');
@@ -342,38 +368,35 @@
 
         function loadUrl() {
             var urlInput = document.getElementById('urlInput').value;
-            var documentId = uuid.v4();
             var tenantId = '{{ tenant.tenant_id }}';
 
             // Display loading message
             displayUrlMessage('Loading URL...', 'blue');
 
-            fetch('http://localhost:8000/load_url', {
+            fetch(`/add_document_url/${tenantId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    document_id: documentId,
                     url: urlInput,
-                    tenant_id: tenantId
                 })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                displayUrlMessage('URL load successful', 'green');
-                console.log('URL load successful:', data);
-                closeUrlPopup();
-            })
-            .catch(error => {
-                displayUrlMessage('Error loading URL', 'red');
-                console.error('There has been a problem with your fetch operation:', error);
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayUrlMessage('URL load successful', 'green');
+                    console.log('URL load successful:', data);
+                    closeUrlPopup();
+                })
+                .catch(error => {
+                    displayUrlMessage('Error loading URL', 'red');
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
         }
 
         function loadWebsite() {
@@ -383,31 +406,30 @@
             // Display loading message
             displayWebsiteMessage('Loading Website...', 'blue');
 
-            fetch('http://localhost:8000/load_website', {
+            fetch(`/add_document_website/${tenantId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     url: websiteInput,
-                    tenant_id: tenantId
                 })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                displayWebsiteMessage('Website load successful', 'green');
-                console.log('Website load successful:', data);
-                closeWebsitePopup();
-            })
-            .catch(error => {
-                displayWebsiteMessage('Error loading Website', 'red');
-                console.error('There has been a problem with your fetch operation:', error);
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayWebsiteMessage('Website load successful', 'green');
+                    console.log('Website load successful:', data);
+                    closeWebsitePopup();
+                })
+                .catch(error => {
+                    displayWebsiteMessage('Error loading Website', 'red');
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
         }
 
         function displayUploadMessage(message, color) {
@@ -415,7 +437,7 @@
             statusMessage.textContent = message;
             statusMessage.style.color = color;
             // Clear message after 2 seconds
-            setTimeout(function() {
+            setTimeout(function () {
                 statusMessage.textContent = '';
             }, 2000);
         }
@@ -425,7 +447,7 @@
             statusMessage.textContent = message;
             statusMessage.style.color = color;
             // Clear message after 2 seconds
-            setTimeout(function() {
+            setTimeout(function () {
                 statusMessage.textContent = '';
             }, 2000);
         }
@@ -435,7 +457,7 @@
             statusMessage.textContent = message;
             statusMessage.style.color = color;
             // Clear message after 2 seconds
-            setTimeout(function() {
+            setTimeout(function () {
                 statusMessage.textContent = '';
             }, 2000);
         }
@@ -445,5 +467,5 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-</html>
 
+</html>

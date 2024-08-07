@@ -12,6 +12,7 @@ from chromadb import Documents, EmbeddingFunction, Embeddings
 from typing import List
 import PyPDF2
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
 import requests
 
 app = Flask(__name__)
@@ -195,26 +196,48 @@ def load_data(tenant_id: str, persist_directory: str):
     print(f"Added {new_count - count} documents")
 
 
-def build_prompt(query: str, context: List[str]) -> str:
+def build_prompt(query: str, context: List[str], tenant_id) -> str:
+    # get tenant name
+    conn, cursor = get_db_connection()
+    cursor.execute('''SELECT tenant_name FROM tenants WHERE tenant_id = ?''', (tenant_id,))
+    tenant_name = cursor.fetchone()[0]
+    print(tenant_name)
+    conn.close()
+    
+    greeting = f"Hi there, welcome to {tenant_name}! How can I help you today?"
     base_prompt = {
-        "content": "I am going to ask you a question, which I would like you to answer"
-        " based on the provided {context}, "
-        " Do not hallucinate,"
-        " give answers on behalf of {tenant_name}, Break your answer up into nicely readable paragraphs.",
+        "content": f"{greeting} You are a website chatbot. User will ask questions, give answers on behalf of '{tenant_name}' based on the provided context. Do not hallucinate."
     }
+    
     user_prompt = {
-        "content": f" The question is '{query}'. Here is all the context you have:"
-        f'{(" ").join(context)}',
+        "content": f"The question is '{query}'. Here is all the context you have: {(' ').join(context)}"
     }
 
     system = f"{base_prompt['content']} {user_prompt['content']}"
-
+    
     return system
 
-def get_gemini_response(query: str, context: List[str]) -> str:
+def get_gemini_response(query: str, context: List[str], tenant_id) -> str:
     model = genai.GenerativeModel("gemini-pro")
-    response = model.generate_content(build_prompt(query, context))
+    response = model.generate_content(build_prompt(query, context, tenant_id))
     return response.text
+
+
+def get_all_urls(base_url):
+    response = requests.get(base_url)
+    if response.status_code != 200:
+        return []
+    
+    soup = BeautifulSoup(response.text, 'html.parser')
+    urls = set()
+    for link in soup.find_all('a', href=True):
+        href = link['href']
+        full_url = urljoin(base_url, href)
+        # Filter out external links
+        if urlparse(full_url).netloc == urlparse(base_url).netloc:
+            urls.add(full_url)
+    
+    return list(urls)
 
 
 @app.route('/')
@@ -381,11 +404,17 @@ def edit_tenant(tenant_id):
 def delete_tenant(tenant_id):
     if not is_logged_in():
         return redirect(url_for('login'))
+    
     conn, cursor = get_db_connection()
+
+    cursor.execute('''DELETE FROM documents WHERE tenant_id = ?''', (tenant_id,))
+    cursor.execute('''DELETE FROM users WHERE tenant_id = ?''', (tenant_id,))
     cursor.execute('''DELETE FROM tenants WHERE tenant_id = ?''', (tenant_id,))
+    
     conn.commit()
     conn.close()
-    return jsonify({'message': 'Tenant deleted successfully'}), 200
+    
+    return jsonify({'message': 'Tenant and associated users deleted successfully'}), 200
     
 
 @app.route('/tenant_data/<tenant_id>', methods=['GET'])
@@ -586,6 +615,97 @@ def delete_user(user_id):
     
     return jsonify({'message': 'User deleted successfully'}), 200
 
+@app.route('/add_document_url/<tenant_id>', methods=['POST'])
+def add_document_url(tenant_id):
+    if not is_logged_in():
+        return redirect(url_for('login'))
+    
+    if tenant_id is None:
+        return jsonify({'message': 'Tenant ID is required'}), 400
+    
+    url = request.json.get('url')
+    if url is None:
+        return jsonify({'message': 'URL is required'}), 400
+    
+    # Get the content of the URL
+    response = requests.get(url)
+    if response.status_code != 200:
+        return jsonify({'message': 'Invalid URL'}), 400
+    
+    # Use BeautifulSoup to parse the HTML content
+    soup = BeautifulSoup(response.text, 'html.parser')
+    content = soup.get_text(separator='\n', strip=True)
+    
+    # Save the content as a document
+    document_id = str(uuid.uuid4())
+    document_name = secure_filename(url.split('/')[-1]) + '.html'
+    tenant_dir = os.path.join(data_dir, tenant_id)
+    docs_dir = os.path.join(tenant_dir, 'docs')
+    raw_dir = os.path.join(docs_dir, 'raw')
+    
+    if not os.path.exists(raw_dir):
+        os.makedirs(raw_dir)
+    
+    document_path = os.path.join(raw_dir, document_name)
+    with open(document_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    
+    conn, cursor = get_db_connection()
+    cursor.execute('''INSERT INTO documents (document_id, document_name, document_type, document_path, tenant_id) VALUES (?, ?, ?, ?, ?)''', 
+                   (document_id, document_name, 'text/html', document_path, tenant_id))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'message': 'Document added successfully'}), 201
+
+
+@app.route('/add_document_website/<tenant_id>', methods=['POST'])
+def add_website_documents(tenant_id):
+    if not is_logged_in():
+        return redirect(url_for('login'))
+    
+    if tenant_id is None:
+        return jsonify({'message': 'Tenant ID is required'}), 400
+    
+    website_url = request.json.get('url')
+    if website_url is None:
+        return jsonify({'message': 'Website URL is required'}), 400
+    
+    urls = get_all_urls(website_url)
+    if not urls:
+        return jsonify({'message': 'No URLs found in the provided website URL'}), 400
+    
+    tenant_dir = os.path.join(data_dir, tenant_id)
+    docs_dir = os.path.join(tenant_dir, 'docs')
+    raw_dir = os.path.join(docs_dir, 'raw')
+    if not os.path.exists(raw_dir):
+        os.makedirs(raw_dir)
+    
+    for url in urls:
+        response = requests.get(url)
+        if response.status_code != 200:
+            continue
+        
+        # Use BeautifulSoup to parse the HTML content
+        soup = BeautifulSoup(response.text, 'html.parser')
+        content = soup.get_text(separator='\n', strip=True)
+        
+        # Save the content as a document
+        document_id = str(uuid.uuid4())
+        document_name = secure_filename(url.split('/')[-1]) + '.html'
+        document_path = os.path.join(raw_dir, document_name)
+        
+        with open(document_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        
+        conn, cursor = get_db_connection()
+        cursor.execute('''INSERT INTO documents (document_id, document_name, document_type, document_path, tenant_id) VALUES (?, ?, ?, ?, ?)''', 
+                       (document_id, document_name, 'text/html', document_path, tenant_id))
+        conn.commit()
+        conn.close()
+    
+    return jsonify({'message': 'Documents added successfully'}), 201
+
 
 @app.route('/load_data', methods=['POST'])
 def api_load_data():
@@ -609,7 +729,7 @@ def api_get_answer():
         query_texts=[query], n_results=5, include=["documents", "metadatas"]
     )
 
-    response = get_gemini_response(query, results["documents"][0])
+    response = get_gemini_response(query, results["documents"][0], tenant_id)
     sources = "\n".join(
         [
             f"{result['filename']}: line {result['line_number']}"

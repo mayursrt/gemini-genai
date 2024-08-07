@@ -281,7 +281,8 @@
     </section>
     <section id="about" class="about-section">
         <h2>About Us</h2>
-        <p>ABC Gears has been providing top-quality gears and accessories for over 20 years. Our commitment to excellence ensures that you receive the best products and services in the industry.</p>
+        <p>ABC Gears has been providing top-quality gears and accessories for over 20 years. Our commitment to
+            excellence ensures that you receive the best products and services in the industry.</p>
     </section>
     <section id="products" class="products-section">
         <h2>Our Products</h2>
@@ -374,11 +375,11 @@
             const messageElement = document.createElement('div');
             messageElement.classList.add('chatbot-message', sender);
             messageElement.innerHTML = `
-                <p>${message}</p><br>
-                <span class="timestamp">${getCurrentTime()}</span>
-            `;
+        <p>${message}</p><br>
+        <span class="timestamp">${getCurrentTime()}</span>
+    `;
             chatBody.appendChild(messageElement);
-            chatBody.scrollTop = chatBody.scrollHeight;
+            scrollToBottom();
         }
 
         function displayTypingEffect(message) {
@@ -386,25 +387,35 @@
             const typingElement = document.createElement('div');
             typingElement.classList.add('chatbot-message', 'bot');
             typingElement.innerHTML = `
-                <p id="typingText"></p>
-                <span class="timestamp">${getCurrentTime()}</span>
-            `;
+        <p id="typingText"></p>
+        <span class="timestamp">${getCurrentTime()}</span>
+    `;
             chatBody.appendChild(typingElement);
 
             const typingText = document.getElementById('typingText');
             let index = 0;
+
             const typingInterval = setInterval(() => {
                 typingText.innerHTML += message[index];
                 index++;
+                scrollToBottom(); // Scroll to the bottom with each character addition
+
                 if (index === message.length) {
                     clearInterval(typingInterval);
                     typingElement.innerHTML = `
-                        <p>${message}</p>
-                        <span class="timestamp">${getCurrentTime()}</span>
-                    `;
+                <p>${message}</p>
+                <span class="timestamp">${getCurrentTime()}</span>
+            `;
+                    scrollToBottom(); // Ensure scroll to bottom after the full message is displayed
                 }
             }, 30); // Adjust typing speed here
         }
+
+        function scrollToBottom() {
+            const chatBody = document.getElementById('chatbotBody');
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
 
         function getCurrentTime() {
             const now = new Date();
@@ -414,7 +425,7 @@
         }
 
         // Add event listener for Enter key press
-        document.getElementById('chatInput').addEventListener('keypress', function(event) {
+        document.getElementById('chatInput').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault(); // Prevent default newline behavior
                 sendMessage();
