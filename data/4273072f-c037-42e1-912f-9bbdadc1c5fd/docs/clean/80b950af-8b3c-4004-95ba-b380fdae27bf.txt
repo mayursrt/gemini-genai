@@ -1,0 +1,13 @@
+**Auto-Processing Approach to Current Supplier Files**
+
+**Problem Statement:**
+
+The current mechanism for picking up supplier files is database-based. Only suppliers set up in the system are processed by the bot. This leads to new suppliers being missed for processing as and when they are added. Additionally, with new source entities being added to current suppliers as well as new acquisitions, it is imperative that there is a mechanism in the bot to auto-set up suppliers before the supplier files are discovered by the system.
+
+**Solution:**
+
+1. As and when the files are discovered through the email bot, the following scenarios will need to be handled:
+   a. The contract number on the file is set up in the database, and the processing is completed as per current modules defined in the system.
+   b. The contract number does not exist in the database configuration, but the folder is set up for the supplier in the database as other files or source entities have been configured for this supplier. In this case, the bot creates the source entity folder (if it does not exist) and saves the corresponding file in the folder. The bot also makes the corresponding entries in database tables.
+   c. The contract number does not exist, and no supplier is set up in the RPA configuration for this specific supplier. In this case, an AI function is run to map the existing folder to the supplier name. If the folder is located, the bot creates the source entity folder (if not already present) and saves the file.
+2. Instead of looping through the database entries in the set-up tables, the bot recursively goes through the supplier folders to locate the files ready for processing. This ensures the bot does not miss any files not set up in the system and facilitates the processing of files under new source entities not yet set up in the system. In this scenario as well, the bot creates the database set-up entries as and when the new files are discovered that are not set up. If the files are in an incorrect folder, the bot will move them to the correct folder.

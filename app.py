@@ -4,6 +4,16 @@ from werkzeug.utils import secure_filename
 import sqlite3
 import uuid
 import os
+import argparse
+from tqdm import tqdm
+import chromadb
+import google.generativeai as genai
+from chromadb import Documents, EmbeddingFunction, Embeddings
+from typing import List
+import PyPDF2
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
+import requests
 
 app = Flask(__name__)
 app.secret_key = 'osho'
@@ -90,6 +100,145 @@ def create_tables():
     
     conn.commit()
     conn.close()
+
+
+
+google_api_key = None
+if "GOOGLE_API_KEY" not in os.environ:
+    gapikey = input("Please enter your Google API Key: ")
+    genai.configure(api_key=gapikey)
+    google_api_key = gapikey
+else:
+    google_api_key = os.environ["GOOGLE_API_KEY"]
+
+
+class GeminiEmbeddingFunction(EmbeddingFunction):
+    def __call__(self, input: Documents) -> Embeddings:
+        model = 'models/embedding-001'
+        title = "Custom query"
+        return genai.embed_content(model=model,
+                                   content=input,
+                                   task_type="retrieval_document",
+                                   title=title)["embedding"]
+
+# def clean_document(content: str) -> str:
+#     cleaned_content = '\n'.join(' '.join(line.split()) for line in content.split('\n')).strip()
+#     return cleaned_content
+
+
+def clean_document(content: str) -> str:
+    prompt = {
+        "content": "Please clean the following document content. Ensure there is no data loss, remove extra whitespace, fix common typos, and ensure the text is properly formatted. Here is the content:\n\n"
+                   f"{content}"
+    }
+    model = genai.GenerativeModel("gemini-pro")
+    response = model.generate_content(prompt['content'])
+    cleaned_content = response.text.strip()
+    
+    return cleaned_content
+
+def load_data(tenant_id: str, persist_directory: str):
+    raw_documents_directory = f"data/{tenant_id}/docs/raw"
+    clean_documents_directory = f"data/{tenant_id}/docs/clean"
+    os.makedirs(clean_documents_directory, exist_ok=True)
+
+    documents = []
+    metadatas = []
+    files = os.listdir(raw_documents_directory)
+    for filename in files:
+        file_path = f"{raw_documents_directory}/{filename}"
+        if filename.lower().endswith('.pdf'):
+            content = ""
+            with open(file_path, "rb") as file:
+                reader = PyPDF2.PdfReader(file)
+                for page in reader.pages:
+                    content += page.extract_text() + "\n"
+            clean_filename = filename.replace('.pdf', '.txt')
+        else:
+            with open(file_path, "r", encoding="utf8") as file:
+                content = file.read()
+            clean_filename = filename
+        
+        cleaned_content = clean_document(content)
+        
+        with open(f"{clean_documents_directory}/{clean_filename}", "w", encoding="utf8") as clean_file:
+            clean_file.write(cleaned_content)
+        
+        for line_number, line in enumerate(cleaned_content.split('\n'), 1):
+            if len(line.strip()) == 0:
+                continue
+            documents.append(line)
+            metadatas.append({"filename": clean_filename, "line_number": line_number})
+
+    client = chromadb.PersistentClient(path=persist_directory)
+
+
+    collection_name = tenant_id
+
+    collection = client.get_or_create_collection(
+        name=collection_name, embedding_function=GeminiEmbeddingFunction()
+    )
+
+    count = collection.count()
+    print(f"Collection already contains {count} documents")
+    ids = [str(i) for i in range(count, count + len(documents))]
+
+    for i in tqdm(
+        range(0, len(documents), 100), desc="Adding documents", unit_scale=100
+    ):
+        collection.add(
+            ids=ids[i : i + 100],
+            documents=documents[i : i + 100],
+            metadatas=metadatas[i : i + 100],  
+        )
+
+    new_count = collection.count()
+    print(f"Added {new_count - count} documents")
+
+
+def build_prompt(query: str, context: List[str], tenant_id) -> str:
+    # get tenant name
+    conn, cursor = get_db_connection()
+    cursor.execute('''SELECT tenant_name FROM tenants WHERE tenant_id = ?''', (tenant_id,))
+    tenant_name = cursor.fetchone()[0]
+    print(tenant_name)
+    conn.close()
+    
+    greeting = f"Hi there, welcome to {tenant_name}! How can I help you today?"
+    base_prompt = {
+        "content": f"{greeting} You are a website chatbot. User will ask questions, give answers on behalf of '{tenant_name}' based on the provided context. Do not hallucinate."
+    }
+    
+    user_prompt = {
+        "content": f"The question is '{query}'. Here is all the context you have: {(' ').join(context)}"
+    }
+
+    system = f"{base_prompt['content']} {user_prompt['content']}"
+    
+    return system
+
+def get_gemini_response(query: str, context: List[str], tenant_id) -> str:
+    model = genai.GenerativeModel("gemini-pro")
+    response = model.generate_content(build_prompt(query, context, tenant_id))
+    return response.text
+
+
+def get_all_urls(base_url):
+    response = requests.get(base_url)
+    if response.status_code != 200:
+        return []
+    
+    soup = BeautifulSoup(response.text, 'html.parser')
+    urls = set()
+    for link in soup.find_all('a', href=True):
+        href = link['href']
+        full_url = urljoin(base_url, href)
+        # Filter out external links
+        if urlparse(full_url).netloc == urlparse(base_url).netloc:
+            urls.add(full_url)
+    
+    return list(urls)
+
 
 @app.route('/')
 def index():
@@ -255,11 +404,17 @@ def edit_tenant(tenant_id):
 def delete_tenant(tenant_id):
     if not is_logged_in():
         return redirect(url_for('login'))
+    
     conn, cursor = get_db_connection()
+
+    cursor.execute('''DELETE FROM documents WHERE tenant_id = ?''', (tenant_id,))
+    cursor.execute('''DELETE FROM users WHERE tenant_id = ?''', (tenant_id,))
     cursor.execute('''DELETE FROM tenants WHERE tenant_id = ?''', (tenant_id,))
+    
     conn.commit()
     conn.close()
-    return jsonify({'message': 'Tenant deleted successfully'}), 200
+    
+    return jsonify({'message': 'Tenant and associated users deleted successfully'}), 200
     
 
 @app.route('/tenant_data/<tenant_id>', methods=['GET'])
@@ -407,6 +562,14 @@ def get_all_users():
     return render_template('user_data.html', users=user_list, username=session['username'])
 
 
+@app.route('/chat', methods=['GET'])
+def chat():
+    return render_template('chat.html', username=session.get('username'))
+
+@app.route('/tenant-chat/<tenant_id>', methods=['GET'])
+def tenantChat(tenant_id):
+    return render_template('chatDummyWebsite.html', username=session.get('username'), tenant_id=tenant_id)
+
 @app.route('/get_user/<user_id>', methods=['GET'])
 def get_user(user_id):
     if not is_logged_in():
@@ -451,6 +614,130 @@ def delete_user(user_id):
     conn.close()
     
     return jsonify({'message': 'User deleted successfully'}), 200
+
+@app.route('/add_document_url/<tenant_id>', methods=['POST'])
+def add_document_url(tenant_id):
+    if not is_logged_in():
+        return redirect(url_for('login'))
+    
+    if tenant_id is None:
+        return jsonify({'message': 'Tenant ID is required'}), 400
+    
+    url = request.json.get('url')
+    if url is None:
+        return jsonify({'message': 'URL is required'}), 400
+    
+    # Get the content of the URL
+    response = requests.get(url)
+    if response.status_code != 200:
+        return jsonify({'message': 'Invalid URL'}), 400
+    
+    # Use BeautifulSoup to parse the HTML content
+    soup = BeautifulSoup(response.text, 'html.parser')
+    content = soup.get_text(separator='\n', strip=True)
+    
+    # Save the content as a document
+    document_id = str(uuid.uuid4())
+    document_name = secure_filename(url.split('/')[-1]) + '.html'
+    tenant_dir = os.path.join(data_dir, tenant_id)
+    docs_dir = os.path.join(tenant_dir, 'docs')
+    raw_dir = os.path.join(docs_dir, 'raw')
+    
+    if not os.path.exists(raw_dir):
+        os.makedirs(raw_dir)
+    
+    document_path = os.path.join(raw_dir, document_name)
+    with open(document_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    
+    conn, cursor = get_db_connection()
+    cursor.execute('''INSERT INTO documents (document_id, document_name, document_type, document_path, tenant_id) VALUES (?, ?, ?, ?, ?)''', 
+                   (document_id, document_name, 'text/html', document_path, tenant_id))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'message': 'Document added successfully'}), 201
+
+
+@app.route('/add_document_website/<tenant_id>', methods=['POST'])
+def add_website_documents(tenant_id):
+    if not is_logged_in():
+        return redirect(url_for('login'))
+    
+    if tenant_id is None:
+        return jsonify({'message': 'Tenant ID is required'}), 400
+    
+    website_url = request.json.get('url')
+    if website_url is None:
+        return jsonify({'message': 'Website URL is required'}), 400
+    
+    urls = get_all_urls(website_url)
+    if not urls:
+        return jsonify({'message': 'No URLs found in the provided website URL'}), 400
+    
+    tenant_dir = os.path.join(data_dir, tenant_id)
+    docs_dir = os.path.join(tenant_dir, 'docs')
+    raw_dir = os.path.join(docs_dir, 'raw')
+    if not os.path.exists(raw_dir):
+        os.makedirs(raw_dir)
+    
+    for url in urls:
+        response = requests.get(url)
+        if response.status_code != 200:
+            continue
+        
+        # Use BeautifulSoup to parse the HTML content
+        soup = BeautifulSoup(response.text, 'html.parser')
+        content = soup.get_text(separator='\n', strip=True)
+        
+        # Save the content as a document
+        document_id = str(uuid.uuid4())
+        document_name = secure_filename(url.split('/')[-1]) + '.html'
+        document_path = os.path.join(raw_dir, document_name)
+        
+        with open(document_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        
+        conn, cursor = get_db_connection()
+        cursor.execute('''INSERT INTO documents (document_id, document_name, document_type, document_path, tenant_id) VALUES (?, ?, ?, ?, ?)''', 
+                       (document_id, document_name, 'text/html', document_path, tenant_id))
+        conn.commit()
+        conn.close()
+    
+    return jsonify({'message': 'Documents added successfully'}), 201
+
+
+@app.route('/load_data', methods=['POST'])
+def api_load_data():
+    tenant_id = request.json.get('tenantid')
+    persist_directory = request.json.get('persist_directory','db')
+    load_data(tenant_id, persist_directory)
+    return jsonify({"message": "Data loaded successfully"}), 200
+
+@app.route('/get_answer', methods=['POST'])
+def api_get_answer():
+    tenant_id = request.json.get('tenantid')
+    persist_directory = request.json.get('persist_directory','db')
+    query = request.json.get('query')
+    
+    client = chromadb.PersistentClient(path=persist_directory)
+    collection = client.get_collection(
+        name=tenant_id, embedding_function=GeminiEmbeddingFunction()
+    )
+
+    results = collection.query(
+        query_texts=[query], n_results=5, include=["documents", "metadatas"]
+    )
+
+    response = get_gemini_response(query, results["documents"][0], tenant_id)
+    sources = "\n".join(
+        [
+            f"{result['filename']}: line {result['line_number']}"
+            for result in results["metadatas"][0]  
+        ]
+    )
+
+    return jsonify({"response": response, "sources": sources}), 200
 
     
 if __name__ == '__main__':

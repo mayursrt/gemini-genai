@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +10,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0 0 100px;
-                background-color: #f0f0f0;
-            }
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0 0 100px;
+            background-color: #f0f0f0;
+        }
+
         .card {
             box-shadow: 0 4px 8px 0 rgba(10, 83, 25, 0.2);
             transition: 0.3s;
@@ -21,69 +23,92 @@
             margin-bottom: 2em;
             background-color: rgb(176, 226, 183);
         }
+
         .card:hover {
             box-shadow: 0 8px 16px 0 rgba(7, 63, 21, 0.2)
         }
+
         .card-body {
             padding: 2em;
         }
+
         .card-title {
             font-size: 1.5em;
             font-weight: bold;
             text-align: center;
             color: rgb(19, 97, 29);
         }
+
         .card-text {
             font-size: 1.2em;
             text-align: center;
             color: rgb(45, 109, 54);
         }
+
         .highlight {
             color: #248596;
         }
+
         .btn-delete {
             background-color: rgb(185, 81, 81);
             color: white;
             border: none;
             cursor: pointer;
         }
+
         tbody tr:hover {
             background-color: #d3ecd0;
         }
+
         .modal-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
+
         .modal-body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
         .modal-button {
-        background-color: #4CAF50; /* Green background */
-        border: none; /* No border */
-        color: white; /* White text */
-        padding: 15px 32px; /* Some padding */
-        text-align: center; /* Centered text */
-        text-decoration: none; /* No underline */
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer; /* Mouse pointer on hover */
-        transition-duration: 0.4s; /* Transition effects */
-        border-radius: 12px; /* Rounded corners */
+            background-color: #4CAF50;
+            /* Green background */
+            border: none;
+            /* No border */
+            color: white;
+            /* White text */
+            padding: 15px 32px;
+            /* Some padding */
+            text-align: center;
+            /* Centered text */
+            text-decoration: none;
+            /* No underline */
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            /* Mouse pointer on hover */
+            transition-duration: 0.4s;
+            /* Transition effects */
+            border-radius: 12px;
+            /* Rounded corners */
         }
 
         .modal-button:hover {
-            background-color: white; /* White background */
-            color: black; /* Black text */
+            background-color: white;
+            /* White background */
+            color: black;
+            /* Black text */
         }
+
         .upload-button-container {
             text-align: center;
             margin-top: 50px;
         }
+
         .upload-btn {
             background-color: #3cb140;
             color: white;
@@ -93,6 +118,7 @@
             font-size: 16px;
             border-radius: 5px;
         }
+
         .upload-btn:hover {
             background-color: #45a049;
         }
@@ -103,18 +129,22 @@
         }
     </script>
 </head>
+
 <body>
     <div style="text-align: center; padding: 20px; background-color: #c2e2b9;">
-        <h1 style="font-size: 2.5em; color: #4CAF50; font-weight: bold; text-transform: uppercase;">ASK-AI</h1>
+        <h1 style="font-size: 2.5em; color: #4CAF50; font-weight: bold; text-transform: uppercase;">ChatMinds</h1>
         <h2>Tenant Panel</h2>
     </div>
     <nav style="background-color: #f8f8f8; padding: 10px; display: flex; justify-content: space-between;">
-        
+
         <a href="{{ home_url }}">
-            <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Home</button>
+            <button
+                style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Home</button>
         </a>
-        <p style="margin: 0; display: inline;">Welcome, <span style="color: #4CAF50;"><a href="{{ user_profile_url }}">{{ username }}</a></span></p>
-        <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer;" onclick="logout()">Logout</button>
+        <p style="margin: 0; display: inline;">Welcome, <span style="color: #4CAF50;"><a
+                    href="{{ user_profile_url }}">{{ username }}</a></span></p>
+        <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer;"
+            onclick="logout()">Logout</button>
     </nav>
     <div class="container">
         <div class="row">
@@ -129,21 +159,13 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="row justify-content-center">
-            <div class="col-12 col-md-8 text-center" style="background-color: #dcf1dd; padding: 5px;">
-                <h2>Upload Documents</h2>
-                <input type="file" id="fileUpload" multiple style="margin-top: 10px; margin-left: 10px;" onchange="showFileName()">
-
-                <button style="background-color: #008CBA; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-top: 10px; margin-left: 10px;" onclick="uploadFiles()">Upload Files</button>
-                
-                <button id="cancelButton" style="display: none; background-color: #f44336; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-top: 10px; margin-left: 10px;" onclick="cancelUpload()">Cancel</button>
-            </div>
-        </div> -->
         <div class="upload-button-container">
             <a href="/load_documents/{{tenant.tenant_id}}">
                 <button style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 10px;">Upload Documents</button>
             </a>
-        </div>
+            <button style="background-color: #da411b; color: white; border: none; padding: 5px 10px; cursor: pointer;" onclick="publishAllDocuments()">Publish All Documents</button>
+            <button style="background-color: #2e1bda; color: white; border: none; padding: 5px 10px; cursor: pointer;" onclick="chat()">Chat</button>
+        </div>        
         <div class="row justify-content-center"></div>
         <div class="row justify-content-center"></div>
         <div class="row">
@@ -171,7 +193,8 @@
         </div>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -181,7 +204,7 @@
                     </button> -->
                 </div>
                 <div class="modal-body">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -189,24 +212,24 @@
             </div>
         </div>
     </div>
-    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #d1f1cd; padding: 10px; display: flex; justify-content: center; align-items: center;">
+    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #d1f1cd; padding: 10px; display: flex; justify-content: center; align-items: center; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);">
         <div style="margin-right: 20px;">
-            <p>&copy; 2024 AskAI. All rights reserved.</p>
+            <p style="margin: 0; font-weight: bold;">&copy; 2024 ChatMinds. All rights reserved.</p>
+        </div>
+        <div style="margin-right: 20px;">
+            <p style="margin: 0; font-weight: bold;"><a href="/about_us" style="color: rgb(201, 80, 146); text-decoration: none;">Meet Us</a></p>
         </div>
         <div>
-            <p><a href="/about_us" style="color: rgb(201, 80, 146);">Meet Us @</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-        </div>
-        <div>
-            <p>
-                <a href="https://www.facebook.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.twitter.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-twitter"></i></a>
-                <a href="https://www.instagram.com/AskAI" target="_blank" style="color: green;"><i class="fab fa-instagram"></i></a>
+            <p style="margin: 0; font-weight: bold;">
+                <a href="https://www.facebook.com/ChatMinds" target="_blank" style="color: green; margin: 0 20px; font-size: 1.5em;"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.twitter.com/ChatMinds" target="_blank" style="color: green; margin: 0 20px; font-size: 1.5em;"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/ChatMinds" target="_blank" style="color: green; margin: 0 20px; font-size: 1.5em;"><i class="fab fa-instagram"></i></a>
             </p>
         </div>
-    </footer>
+    </footer>    
     <script>
         var BASE_PATH = "{{ base_path }}";
-        
+
         function cancelUpload() {
             // Your logic to cancel the upload goes here
             var fileInput = document.getElementById('fileUpload');
@@ -228,77 +251,110 @@
             }
         }
 
+        //create a function chat also pass tenantId in it and this function should redirect to chat page
+        function chat() {
+            window.location.href = '/tenant-chat/{{ tenant.tenant_id }}';
+        }
+        
+
         function uploadFiles() {
             var fileInput = document.getElementById('fileUpload');
             var files = fileInput.files;
             var formData = new FormData();
-        
+
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 formData.append('files[]', file, file.name);
             }
-        
+
             fetch('/add_document/{{tenant.tenant_id}}', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert('File upload successful:', data)
-                console.log('File upload successful:', data);
-                location.reload();
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('File upload successful:', data)
+                    console.log('File upload successful:', data);
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
             fetchDocuments();
+        }
+
+        function publishAllDocuments() {
+            var tenantId = "{{ tenant.tenant_id }}"; // Get the tenant ID from the template
+
+            fetch('/load_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    tenantid: tenantId,
+                    persist_directory: 'db'
+                }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Data loaded successfully: ' + data.message);
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
         }
 
         function fetchDocuments() {
             fetch('/documents/{{tenant.tenant_id}}')
-            .then(response => response.json())
-            .then(data => {
-                var documentList = document.getElementById('documentList');
-                documentList.innerHTML = '';
-                data.forEach(function(doc) {
-                    var row = document.createElement('tr');
-                    row.innerHTML = '<td>' + doc.document_id + '</td><td>' + doc.document_name + '</td><td>' + doc.document_type + '</td><td>' + doc.document_path + '</td><td>' + doc.created_at + '</td><td>' + doc.updated_at + '</td><td><button class="delete-button btn-delete" data-document-id="' + doc.document_id + '">Delete</button></td>';
-                    row.querySelector('.delete-button').addEventListener('click', function(event) {
-                        event.stopPropagation(); // Prevent the row click event from triggering
-                        var documentId = this.getAttribute('data-document-id');
+                .then(response => response.json())
+                .then(data => {
+                    var documentList = document.getElementById('documentList');
+                    documentList.innerHTML = '';
+                    data.forEach(function (doc) {
+                        var row = document.createElement('tr');
+                        row.innerHTML = '<td>' + doc.document_id + '</td><td>' + doc.document_name + '</td><td>' + doc.document_type + '</td><td>' + doc.document_path + '</td><td>' + doc.created_at + '</td><td>' + doc.updated_at + '</td><td><button class="delete-button btn-delete" data-document-id="' + doc.document_id + '">Delete</button></td>';
+                        row.querySelector('.delete-button').addEventListener('click', function (event) {
+                            event.stopPropagation(); // Prevent the row click event from triggering
+                            var documentId = this.getAttribute('data-document-id');
 
-                        if (confirm("Are you sure you want to delete this document? This action cannot be reverted.")) {
-                            fetch('/delete_document/' + documentId, {
-                                method: 'DELETE'
-                            })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Network response was not ok');
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                fetchDocuments();
-                            })
-                            .catch(error => {
-                                console.error('There has been a problem with your fetch operation:', error);
-                            });
-                        }
+                            if (confirm("Are you sure you want to delete this document? This action cannot be reverted.")) {
+                                fetch('/delete_document/' + documentId, {
+                                    method: 'DELETE'
+                                })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        fetchDocuments();
+                                    })
+                                    .catch(error => {
+                                        console.error('There has been a problem with your fetch operation:', error);
+                                    });
+                            }
+                        });
+                        row.addEventListener('click', function () {
+                            // Add the button to the modal body
+                            $('.modal-body').html('<button class="modal-button" onclick="window.open(\'/view_document/' + doc.document_id + '/tenant/{{ tenant.tenant_id }}\', \'_blank\')">Open Document</button>');
+                            // Show the modal
+                            $('#exampleModal').modal('show');
+                        });
+                        documentList.appendChild(row);
                     });
-                    row.addEventListener('click', function() {                    
-                        // Add the button to the modal body
-                        $('.modal-body').html('<button class="modal-button" onclick="window.open(\'/view_document/' + doc.document_id + '/tenant/{{ tenant.tenant_id }}\', \'_blank\')">Open Document</button>');                    
-                        // Show the modal
-                        $('#exampleModal').modal('show');
-                    });
-                    documentList.appendChild(row);
                 });
-            });
         }
         fetchDocuments();
     </script>
@@ -307,4 +363,5 @@
     <!-- Include Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>

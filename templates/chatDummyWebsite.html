@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Gears</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e6f2e6;
+            color: #2e4d2e;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #3b6e3b;
+            padding: 20px;
+        }
+
+        .logo h1 {
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .hero-section {
+            background-color: #4d8c4d;
+            color: #ffffff;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .hero-section .btn {
+            background-color: #3b6e3b;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .hero-section .btn:hover {
+            background-color: #2e4d2e;
+        }
+
+        .about-section,
+        .products-section,
+        .contact-section {
+            padding: 40px 20px;
+        }
+
+        .product-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .product-card {
+            background-color: #ffffff;
+            border: 1px solid #3b6e3b;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .product-card img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .product-card h3 {
+            color: #2e4d2e;
+        }
+
+        .contact-section form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-section label {
+            margin-top: 10px;
+            color: #2e4d2e;
+        }
+
+        .contact-section input,
+        .contact-section textarea {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #3b6e3b;
+            border-radius: 5px;
+        }
+
+        .contact-section .btn {
+            background-color: #3b6e3b;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .contact-section .btn:hover {
+            background-color: #2e4d2e;
+        }
+
+        footer {
+            background-color: #3b6e3b;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        /* Chatbot styles */
+        .chat-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-size: 24px;
+        }
+
+        .chatbot-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            max-height: 500px;
+            background-color: #ffffff;
+            border: 1px solid #007bff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chatbot-header {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .chatbot-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chatbot-message {
+            display: flex;
+            align-items: flex-start;
+            max-width: 80%;
+        }
+
+        .chatbot-message.user {
+            align-self: flex-end;
+        }
+
+        .chatbot-message.bot {
+            align-self: flex-start;
+        }
+
+        .chatbot-message p {
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 0;
+            word-wrap: break-word;
+            position: relative;
+            min-width: 150px;
+            max-width: 300px;
+        }
+
+        .chatbot-message.user p {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        .chatbot-message.bot p {
+            background-color: #f1f1f1;
+        }
+
+        .timestamp {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .chatbot-footer {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #dddddd;
+        }
+
+        .chatbot-footer input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+        }
+
+        .chatbot-footer button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .chatbot-footer button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>ABC Gears</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section id="home" class="hero-section">
+        <div class="hero-content">
+            <h2>Welcome to ABC Gears</h2>
+            <p>Your one-stop shop for premium gears and accessories.</p>
+            <a href="#products" class="btn">Shop Now</a>
+        </div>
+    </section>
+    <section id="about" class="about-section">
+        <h2>About Us</h2>
+        <p>ABC Gears has been providing top-quality gears and accessories for over 20 years. Our commitment to
+            excellence ensures that you receive the best products and services in the industry.</p>
+    </section>
+    <section id="products" class="products-section">
+        <h2>Our Products</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="../static/images/gear1.jpeg" alt="Gear 1">
+                <h3>Gear 1</h3>
+                <p>High-quality gear for all your needs.</p>
+            </div>
+            <div class="product-card">
+                <img src="../static/images/gear2.jpeg" alt="Gear 2">
+                <h3>Gear 2</h3>
+                <p>Durable and reliable gear for any application.</p>
+            </div>
+            <div class="product-card">
+                <img src="../static/images/gear3.jpeg" alt="Gear 3">
+                <h3>Gear 3</h3>
+                <p>Premium gear for professional use.</p>
+            </div>
+        </div>
+    </section>
+    <section id="contact" class="contact-section">
+        <h2>Contact Us</h2>
+        <form>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+            <button type="submit" class="btn">Send Message</button>
+        </form>
+    </section>
+    <footer>
+        <p>&copy; 2024 ABC Gears. All rights reserved.</p>
+    </footer>
+
+    <!-- Chatbot -->
+    <div class="chat-icon" onclick="toggleChatbot()">💬</div>
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <h3>ChatMinds</h3>
+        </div>
+        <div class="chatbot-body" id="chatbotBody"></div>
+        <div class="chatbot-footer">
+            <input type="text" id="chatInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleChatbot() {
+            const chatbotContainer = document.getElementById('chatbotContainer');
+            chatbotContainer.style.display = chatbotContainer.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const chatBody = document.getElementById('chatbotBody');
+
+            const userMessage = input.value;
+            if (!userMessage) return;
+
+            // Display user message
+            displayMessage(userMessage, 'user');
+
+            // Clear input field
+            input.value = '';
+
+            // Simulate API call
+            const response = await fetch('/get_answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tenantid: getTenant(),
+                    persist_directory: 'db',
+                    query: userMessage
+                })
+            });
+            const data = await response.json();
+
+            // Simulate typing effect for bot response
+            displayTypingEffect(data.response);
+        }
+
+        function displayMessage(message, sender) {
+            const chatBody = document.getElementById('chatbotBody');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chatbot-message', sender);
+            messageElement.innerHTML = `
+        <p>${message}</p><br>
+        <span class="timestamp">${getCurrentTime()}</span>
+    `;
+            chatBody.appendChild(messageElement);
+            scrollToBottom();
+        }
+
+        function displayTypingEffect(message) {
+            const chatBody = document.getElementById('chatbotBody');
+            const typingElement = document.createElement('div');
+            typingElement.classList.add('chatbot-message', 'bot');
+            typingElement.innerHTML = `
+        <p id="typingText"></p>
+        <span class="timestamp">${getCurrentTime()}</span>
+    `;
+            chatBody.appendChild(typingElement);
+
+            const typingText = document.getElementById('typingText');
+            let index = 0;
+
+            const typingInterval = setInterval(() => {
+                typingText.innerHTML += message[index];
+                index++;
+                scrollToBottom(); // Scroll to the bottom with each character addition
+
+                if (index === message.length) {
+                    clearInterval(typingInterval);
+                    typingElement.innerHTML = `
+                <p>${message}</p>
+                <span class="timestamp">${getCurrentTime()}</span>
+            `;
+                    scrollToBottom(); // Ensure scroll to bottom after the full message is displayed
+                }
+            }, 30); // Adjust typing speed here
+        }
+
+        function scrollToBottom() {
+            const chatBody = document.getElementById('chatbotBody');
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        // Add event listener for Enter key press
+        document.getElementById('chatInput').addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default newline behavior
+                sendMessage();
+            }
+        });
+
+        function getTenant() {
+            return '{{tenant_id}}';
+        }
+    </script>
+</body>
+
+</html>
